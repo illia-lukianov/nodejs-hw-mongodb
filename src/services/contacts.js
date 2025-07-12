@@ -1,26 +1,24 @@
+import mongoose from "mongoose";
+import { patchContactSchema } from "../models/patchSchema.js";
 import { contactModel } from "../models/schema.js";
 
-export async function fetchContacts (req, res) {
-    const data = await contactModel.find();
-    res.json({
-        status: 200,
-        message: "Successfully found contacts!",
-        data,
-    });
+export async function allContacts () {
+    return contactModel.find()
 };
 
-export async function fetchContactById (req, res) {
-    const student = await contactModel.findById(req.params.contactId);
+export async function contactById (id) {
+    return contactModel.findById(id);
+}
 
-    if (student === null) {
-    return res
-      .status(404)
-      .json({ status: 404, message: 'Student not found', data: null });
-    }
+export async function createContact(payload) {
+    return contactModel.create(payload);
+}
 
-    return res.json({
-        status: 200,
-	    message: `Successfully found contact with id ${req.params.contactId}!`,
-        data: student,
-    });
+export async function patchContact(id, payload) {
+    new (mongoose.models.tempPatchModel || mongoose.model('tempPatchModel', patchContactSchema))(payload).validateSync();
+    return contactModel.findByIdAndUpdate(id, payload, { new: true, runValidators: true, });
+}
+
+export async function deleteContact(id) {
+    return contactModel.findByIdAndDelete(id);
 }

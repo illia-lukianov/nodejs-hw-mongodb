@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const ContactSchema = new mongoose.Schema(
+export const patchContactSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     phoneNumber: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
@@ -21,14 +21,11 @@ const ContactSchema = new mongoose.Schema(
     contactType: {
       type: String,
       enum: ['work', 'home', 'personal'],
-      required: true,
+      required: false,
       default: 'personal',
     },
   },
   {
     timestamps: true,
-    versionKey: false,
   },
 );
-
-export const contactModel = mongoose.model('Contact', ContactSchema);
