@@ -1,6 +1,6 @@
 import HttpError from 'http-errors';
 
-export function errorHandler(err, res) {
+export function errorHandler(err, req, res, next) {
   if (err instanceof HttpError) {
     res
       .status(err.status)
