@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-import { patchContactSchema } from "../models/patchSchema.js";
 import { contactModel } from "../models/schema.js";
 
 export async function allContacts () {
@@ -15,8 +13,7 @@ export async function createContact(payload) {
 }
 
 export async function patchContact(id, payload) {
-    new (mongoose.models.tempPatchModel || mongoose.model('tempPatchModel', patchContactSchema))(payload).validateSync();
-    return contactModel.findByIdAndUpdate(id, payload, { new: true, runValidators: true, });
+    return contactModel.findByIdAndUpdate(id, payload, { new: true, });
 }
 
 export async function deleteContact(id) {

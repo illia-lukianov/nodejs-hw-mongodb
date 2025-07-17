@@ -12,7 +12,7 @@ export async function fetchContactsController(req, res) {
 
 export async function fetchContactByIdController(req, res) {
   const contact = await contactById(req.params.contactId);
-
+  console.log(contact)
   if (contact === null) {
     throw createHttpError(404, 'Contact not found');
   }

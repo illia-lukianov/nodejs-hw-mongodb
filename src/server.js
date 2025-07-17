@@ -1,4 +1,4 @@
-import express, { json } from 'express';
+import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
 import 'dotenv/config';
@@ -12,16 +12,16 @@ const PORT = getEnvVariables('PORT') ?? '3000';
 export default function setupServer() {
   const app = express();
   app.use(cors());
-  // app.use(
-  //   pino({
-  //     transport: {
-  //       target: 'pino-pretty',
-  //     },
-  //   }),
-  // );
-  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+      },
+    }),
+  );
   app.use(express.json());
   app.use('/contacts', ContactsRouter);
   app.use(errorHandler);
   app.use(notFoundHandler);
+  app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 }
