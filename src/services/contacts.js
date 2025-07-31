@@ -1,9 +1,9 @@
-import { contactModel } from "../models/schema.js";
+import { contactModel } from "../models/contact.js";
 import calculatePaginationData from "../utils/calculatePaginationData.js";
 
-export async function allContacts ({page, perPage, sortBy, sortOrder, filter}) {
+export async function allContacts ({page, perPage, sortBy, sortOrder, filter, userId}) {
     const skip = (page - 1) * perPage;
-    const contactsQuery = contactModel.find();
+    const contactsQuery = contactModel.find({ userId });
     if (filter.isFavourite === true || false) {
         contactsQuery.where('isFavourite').equals(filter.isFavourite);
     }
@@ -19,18 +19,19 @@ export async function allContacts ({page, perPage, sortBy, sortOrder, filter}) {
     };
 };
 
-export async function contactById (id) {
-    return contactModel.findById(id);
+export async function contactById (id, userId) {
+    return contactModel.findOne({ _id: id, userId });
 }
 
-export async function createContact(payload) {
-    return contactModel.create(payload);
+export async function createContact(payload, userId) {
+    const user = {userId , ...payload};
+    return contactModel.create(user);
 }
 
-export async function patchContact(id, payload) {
-    return contactModel.findByIdAndUpdate(id, payload, { new: true, });
+export async function patchContact(id, payload, userId) {
+    return contactModel.findOneAndUpdate({ _id: id, userId }, payload, { new: true, });
 }
 
-export async function deleteContact(id) {
-    return contactModel.findByIdAndDelete(id);
+export async function deleteContact(id, userId ) {
+    return contactModel.findOneAndDelete({ _id: id, userId });
 }
