@@ -30,6 +30,10 @@ const ContactSchema = new mongoose.Schema(
       ref: 'users',
       required: true,
     },
+    photo: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

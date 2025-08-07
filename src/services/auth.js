@@ -4,6 +4,9 @@ import bcrypt from "bcrypt";
 import { randomBytes } from 'crypto';
 import { sessionModel } from "../models/session.js";
 import { FIFTEEN_MINUTES, THIRTY_DAYS } from "../constans/index.js";
+import jwt from 'jsonwebtoken';
+import { sendMail } from "../utils/sendMail.js";
+import getEnvVariables from "../utils/getEnvVariables.js";
 
 const createSession = () => {
   const accessToken = randomBytes(30).toString('base64');
@@ -85,4 +88,57 @@ export const refreshUserSession = async ({sessionId, refreshToken}) => {
 
 export const logoutUser = async ({sessionId}) => {
   await sessionModel.deleteOne({ _id: sessionId });
+}
+
+export const requestPasswordReset = async (email) => {
+  const user = await userModel.findOne({ email });
+
+  if (user === null) {
+    throw new createHttpError.NotFound('User not found');
+  }
+
+  const token = jwt.sign(
+    {
+      sub: user._id,
+      name: user.name,
+    },
+    getEnvVariables('SECRET_JWT'),
+    {
+      expiresIn: '15m',
+    },
+  );
+  const mail = await sendMail({
+      to: email,
+      subject: 'Reset password',
+      html: `<p>To reset password please visit this <a href="http://localhost:3000/reset-password/${token}">link</a></p>`,
+    });
+    if (!mail.accepted || mail.accepted.length === 0) {
+      throw createHttpError(500, "Failed to send the email, please try again later.");
+    }
+};
+
+export const resetPwd = async (token, password) => {
+    try {
+    const decoded = jwt.verify(token, getEnvVariables('SECRET_JWT'));
+
+    const user = await userModel.findById(decoded.sub);
+
+    if (user === null) {
+      throw new createHttpError.NotFound('User not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await userModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      throw new createHttpError.Unauthorized('Token is expired');
+    }
+
+    if (error.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Token is unauthorized');
+    }
+
+    throw error;
+  }
 }

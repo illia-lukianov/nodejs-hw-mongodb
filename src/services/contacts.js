@@ -23,12 +23,15 @@ export async function contactById (id, userId) {
     return contactModel.findOne({ _id: id, userId });
 }
 
-export async function createContact(payload, userId) {
-    const user = {userId , ...payload};
+export async function createContact(payload, photo, userId) {
+    const user = {userId , ...payload, photo};
     return contactModel.create(user);
 }
 
-export async function patchContact(id, payload, userId) {
+export async function patchContact(id, payload, userId, photo) {
+    if (photo) {
+      payload.photo = photo;
+    }
     return contactModel.findOneAndUpdate({ _id: id, userId }, payload, { new: true, });
 }
 

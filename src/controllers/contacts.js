@@ -1,8 +1,12 @@
+import * as fs from "node:fs/promises"
+import path from "node:path";
 import createHttpError from "http-errors";
 import { allContacts, contactById, createContact, deleteContact, patchContact } from "../services/contacts.js";
 import parsePaginationParams from "../utils/parsePaginationParams.js";
 import parseSortParams from "../utils/parseSortParams.js";
 import parseFilterParams from "../utils/parseFilterParams.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import getEnvVariables from "../utils/getEnvVariables.js";
 
 export async function fetchContactsController(req, res) {
   const {page, perPage} = parsePaginationParams(req.query);
@@ -16,7 +20,7 @@ export async function fetchContactsController(req, res) {
         message: "Successfully found contacts!",
         data,
     });
-};
+}
 
 export async function fetchContactByIdController(req, res) {
   const userId = req.user._id;
@@ -33,8 +37,17 @@ export async function fetchContactByIdController(req, res) {
 }
 
 export async function createContactController(req, res) {
-  const contact = await createContact(req.body, req.user._id);
+  let photo = null;
 
+  if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === 'true') {
+    photo = (await uploadToCloudinary(req.file.path)).secure_url
+    await fs.unlink(req.file.path);
+  } else {
+    await fs.rename(req.file.path, path.resolve("src/uploads/photo", req.file.filename));
+    photo = `http://localhost:8080/photo/${req.file.filename}`;
+  };
+
+  const contact = await createContact(req.body, photo, req.user._id);
   return res.status(201).json({
     status: 201,
     message: "Successfully created a contact!",
@@ -44,7 +57,16 @@ export async function createContactController(req, res) {
 
 export async function patchContactByIdController(req, res) {
   const userId = req.user._id;
-  const contact =  await patchContact(req.params.contactId, req.body, userId);
+    let photo = null;
+
+  if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === 'true') {
+    photo = (await uploadToCloudinary(req.file.path)).secure_url
+    await fs.unlink(req.file.path);
+  } else {
+    await fs.rename(req.file.path, path.resolve("src/uploads/photo", req.file.filename));
+    photo = `http://localhost:8080/photo/${req.file.filename}`;
+  };
+  const contact =  await patchContact(req.params.contactId, req.body, userId, photo);
 
   if (contact === null) {
     throw createHttpError(404, 'Contact not found');

@@ -6,6 +6,7 @@ export const createContactSchema = Joi.object({
   email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } } ).required(),
   isFavourite: Joi.boolean().default(false),
   contactType: Joi.string().valid('work', 'home', 'personal').required(),
+  photo: Joi.string(),
   parentId: Joi.string().custom((value, helper) => {
 		    if (value && !isValidObjectId(value)) {
 		      return helper.message('Parent id should be a valid mongo id');
@@ -20,4 +21,5 @@ export const patchContactSchema = Joi.object({
   email: Joi.string().email({ minDomainSegments: 2, tlds: {allow: ["com", "net"]}}),
   isFavourite: Joi.boolean().default(false),
   contactType: Joi.string().valid('work', 'home', 'personal'),
+  photo: Joi.string(),
 });

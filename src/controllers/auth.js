@@ -1,5 +1,5 @@
 import { ONE_DAY } from '../constans/index.js';
-import { loginUser, logoutUser, refreshUserSession, registerUser } from '../services/auth.js';
+import { loginUser, logoutUser, refreshUserSession, registerUser, requestPasswordReset, resetPwd } from '../services/auth.js';
 
 export function setupCookies(res, session) {
   res.cookie('refreshToken', session.refreshToken, {
@@ -64,4 +64,22 @@ export async function logoutController(req, res) {
   res.clearCookie('refreshToken');
   res.clearCookie('sessionId');
   res.status(204).send();
+}
+
+export async function sendResetEmailController (req, res) {
+    const email = await requestPasswordReset(req.body.email);
+    console.log("🚀 ~ sendResetEmailController ~ email:", email)
+    res.json({
+       status: 200,
+       message: "Reset password email has been successfully sent.",
+});
+}
+
+export async function resetPwdController (req, res) {
+    const { token, password } = req.body;
+    await resetPwd(token, password);
+    res.json({
+       status: 200,
+       message: "Password has been successfully reset.",
+   });
 }

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
+import path from 'node:path'
 import 'dotenv/config';
 import getEnvVariables from './utils/getEnvVariables.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -20,6 +21,7 @@ export default function setupServer() {
       },
     }),
   );*/
+  app.use('/photo', express.static(path.resolve('src/uploads/photo')));
   app.use(express.json());
   app.use(cookieParser());
   app.use(router);
