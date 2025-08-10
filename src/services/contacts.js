@@ -4,8 +4,8 @@ import calculatePaginationData from "../utils/calculatePaginationData.js";
 export async function allContacts ({page, perPage, sortBy, sortOrder, filter, userId}) {
     const skip = (page - 1) * perPage;
     const contactsQuery = contactModel.find({ userId });
-    if (filter.isFavourite === true || false) {
-        contactsQuery.where('isFavourite').equals(filter.isFavourite);
+    if (filter.contactType !== undefined) {
+        contactsQuery.where('contactType').equals(filter.contactType);
     }
     const contactsCount = await contactModel.find().merge(contactsQuery).countDocuments();
     const contacts = await contactsQuery.skip(skip).limit(perPage).sort({[sortBy]:sortOrder}).exec();

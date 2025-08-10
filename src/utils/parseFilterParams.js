@@ -1,16 +1,14 @@
-function parseIsFavourite (value) {
-    if (value === 'true') {
-        return true;
-    } else if (value === 'false') {
-        return false;
-    }
-    
-    return undefined;
+function parseContactType(value) {
+  const allowed = ['work', 'home', 'personal'];
+  if (allowed.includes(value)) {
+    return value;
+  }
+  return undefined;
 }
 
-export default function parseFilterParams (query) {
-    const {isFavourite} = query;
-    return {
-        isFavourite: parseIsFavourite(isFavourite),
-    }
+export default function parseFilterParams(query) {
+  const { contactType } = query;
+  return {
+    contactType: parseContactType(contactType),
+  };
 }

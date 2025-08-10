@@ -1,26 +1,14 @@
-function parseSortOrder (value) {
-   const defaultValue = 'asc';
+export default function parseSortParams(query) {
+    const defaultSortBy = 'name';
+    const defaultSortOrder = 'asc';
 
-    if (value === 'asc' || value === 'desc') {
-        return value;
-    }
+    const allowedFields = ['name', 'isFavourite'];
+    const allowedOrders = ['asc', 'desc'];
 
-    return defaultValue;
-}
+    const keys = Object.keys(query);
 
-function parseSortBy (value) {
-    const defaultValue = 'name';
-    if (value === 'name' || value === 'isFavourite') {
-        return value;
-    }
+    const sortBy = keys.find(filter => allowedFields.includes(filter)) || defaultSortBy;
+    const sortOrder = allowedOrders.includes(query[sortBy]) ? query[sortBy] : defaultSortOrder;
 
-    return defaultValue;
-}
-
-export default function parseSortParams (query) {
-    const {sortOrder, sortBy} = query;
-    return {
-        sortOrder: parseSortOrder(sortOrder),
-        sortBy: parseSortBy(sortBy),
-    }
+    return { sortBy, sortOrder };
 }
