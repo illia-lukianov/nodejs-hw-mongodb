@@ -103,7 +103,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successfully get students",
+            "description": "Successfully found contacts",
             "content": {
               "application/json": {
                 "schema": {
@@ -120,10 +120,84 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully get students"
+                      "example": "Successfully found contacts!"
                     },
                     "data": {
-                      "$ref": "#/components/schemas/contact"
+                      "type": "object",
+                      "required": [
+                        "data",
+                        "page",
+                        "perPage",
+                        "totalItems",
+                        "totalPages",
+                        "hasNextPage",
+                        "hasPreviousPage",
+                        "sortBy",
+                        "sortOrder",
+                        "filter"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/contact"
+                          }
+                        },
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "example": 0
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 0
+                        },
+                        "hasNextPage": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "hasPreviousPage": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "sortBy": {
+                          "type": "string",
+                          "enum": [
+                            "name",
+                            "isFavourite"
+                          ],
+                          "example": "name"
+                        },
+                        "sortOrder": {
+                          "type": "string",
+                          "enum": [
+                            "asc",
+                            "desc"
+                          ],
+                          "example": "desc"
+                        },
+                        "filter": {
+                          "type": "object",
+                          "properties": {
+                            "contactType": {
+                              "type": "string",
+                              "enum": [
+                                "work",
+                                "home",
+                                "personal"
+                              ],
+                              "example": "work"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -158,9 +232,7 @@
                 "required": [
                   "name",
                   "phoneNumber",
-                  "contactType",
-                  "userId",
-                  "photo"
+                  "contactType"
                 ],
                 "properties": {
                   "name": {
@@ -192,11 +264,6 @@
                     ],
                     "description": "Contact type",
                     "example": "work"
-                  },
-                  "userId": {
-                    "type": "string",
-                    "description": "Contact id",
-                    "example": "6895889e53921ad84070f388"
                   },
                   "photo": {
                     "type": "string",
@@ -351,7 +418,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully patched student"
+                      "example": "Successfully patched contact"
                     },
                     "data": {
                       "$ref": "#/components/schemas/contact"
@@ -428,7 +495,6 @@
           "phoneNumber",
           "contactType",
           "userId",
-          "photo",
           "createdAt",
           "updatedAt"
         ],
@@ -549,23 +615,7 @@
         }
       },
       "204": {
-        "description": "Deleted student",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "required": [
-                "status"
-              ],
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 204
-                }
-              }
-            }
-          }
-        }
+        "description": "Deleted student"
       },
       "400": {
         "description": "Bad Request",

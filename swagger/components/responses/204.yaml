@@ -1,11 +1,1 @@
 description: Deleted student
-content:
-  application/json:
-    schema:
-      type: object
-      required:
-        - status
-      properties:
-        status:
-          type: integer
-          example: 204

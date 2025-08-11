@@ -39,33 +39,41 @@ export async function fetchContactByIdController(req, res) {
 export async function createContactController(req, res) {
   let photo = null;
 
+if (req.file) {
   if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === 'true') {
-    photo = (await uploadToCloudinary(req.file.path)).secure_url
+    photo = (await uploadToCloudinary(req.file.path)).secure_url;
     await fs.unlink(req.file.path);
   } else {
-    await fs.rename(req.file.path, path.resolve("src/uploads/photo", req.file.filename));
+    await fs.rename(
+      req.file.path,
+      path.resolve("src/uploads/photo", req.file.filename)
+    );
     photo = `http://localhost:8080/photo/${req.file.filename}`;
-  };
+  }
+}
 
-  const contact = await createContact(req.body, photo, req.user._id);
-  return res.status(201).json({
-    status: 201,
-    message: "Successfully created a contact!",
-    data: contact,
-  });
+const contact = await createContact(req.body, photo, req.user._id);
+
+return res.status(201).json({
+  status: 201,
+  message: "Successfully created a contact!",
+  data: contact,
+});
 }
 
 export async function patchContactByIdController(req, res) {
   const userId = req.user._id;
-    let photo = null;
-
-  if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === 'true') {
-    photo = (await uploadToCloudinary(req.file.path)).secure_url
-    await fs.unlink(req.file.path);
-  } else {
-    await fs.rename(req.file.path, path.resolve("src/uploads/photo", req.file.filename));
-    photo = `http://localhost:8080/photo/${req.file.filename}`;
-  };
+  let photo = null;
+  if (req.file) {
+    if (getEnvVariables('UPLOAD_TO_CLOUDINARY') === 'true') {
+      photo = (await uploadToCloudinary(req.file.path)).secure_url
+      await fs.unlink(req.file.path);
+    } else {
+      await fs.rename(req.file.path, path.resolve("src/uploads/photo", req.file.filename));
+      photo = `http://localhost:8080/photo/${req.file.filename}`;
+    };
+  }
+  
   const contact =  await patchContact(req.params.contactId, req.body, userId, photo);
 
   if (contact === null) {

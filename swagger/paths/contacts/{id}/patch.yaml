@@ -60,7 +60,7 @@ responses:
               example: 200
             message:
               type: string
-              example: Successfully patched student
+              example: Successfully patched contact
             data:
               $ref: ../../../components/schemas/contact.yaml
   '401':
